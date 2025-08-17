@@ -1,0 +1,751 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Caesar Cipher Tool</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2c3e50, #34495e);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, rgba(255,255,255,0.1) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            position: relative;
+            z-index: 2;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            position: relative;
+            z-index: 2;
+        }
+
+        .profile-section {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            margin: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .profile-container {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .profile-image-container {
+            position: relative;
+            flex-shrink: 0;
+        }
+
+        .profile-image {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid #667eea;
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .profile-image:hover {
+            transform: scale(1.05);
+            box-shadow: 0 15px 35px rgba(102, 126, 234, 0.4);
+        }
+
+        .profile-image-placeholder {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 3rem;
+            font-weight: bold;
+            border: 4px solid #667eea;
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .profile-image-placeholder:hover {
+            transform: scale(1.05);
+            box-shadow: 0 15px 35px rgba(102, 126, 234, 0.4);
+        }
+
+        .profile-info {
+            flex: 1;
+        }
+
+        .profile-info h2 {
+            color: #2c3e50;
+            font-size: 2rem;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .profile-info .title {
+            color: #667eea;
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+
+        .profile-info .description {
+            color: #6c757d;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .profile-links {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .profile-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            text-decoration: none;
+            border-radius: 25px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .profile-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+            color: white;
+            text-decoration: none;
+        }
+
+        .editable-field {
+            display: inline-block;
+        }
+
+        .edit-indicator {
+            font-size: 0.8rem;
+            color: #999;
+            font-style: italic;
+            margin-top: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .profile-container {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .profile-image, .profile-image-placeholder {
+                width: 120px;
+                height: 120px;
+            }
+            
+            .profile-info h2 {
+                font-size: 1.5rem;
+            }
+            
+            .profile-links {
+                justify-content: center;
+            }
+        }
+
+        .main-content {
+            padding: 40px;
+        }
+
+        .tab-container {
+            display: flex;
+            margin-bottom: 30px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 5px;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 12px 20px;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            color: #6c757d;
+        }
+
+        .tab.active {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        textarea, input[type="number"] {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            resize: vertical;
+        }
+
+        textarea:focus, input[type="number"]:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .button-group {
+            display: flex;
+            gap: 15px;
+            margin: 25px 0;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #f093fb, #f5576c);
+            color: white;
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, #ffecd2, #fcb69f);
+            color: #8b4513;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .result-area {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 25px;
+            border-left: 4px solid #667eea;
+        }
+
+        .result-title {
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #2c3e50;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .brute-force-results {
+            max-height: 400px;
+            overflow-y: auto;
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 15px;
+        }
+
+        .key-result {
+            margin: 8px 0;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 6px;
+            border-left: 3px solid #28a745;
+            font-family: 'Courier New', monospace;
+        }
+
+        .key-result:hover {
+            background: #e9ecef;
+        }
+
+        .shift-demo {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .demo-card {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            border: 2px solid #e9ecef;
+            text-align: center;
+        }
+
+        .demo-card h4 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .icon {
+            width: 20px;
+            height: 20px;
+            fill: currentColor;
+        }
+
+        .two-column {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+
+        @media (max-width: 768px) {
+            .two-column {
+                grid-template-columns: 1fr;
+            }
+            
+            .button-group {
+                flex-direction: column;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .main-content {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔐 Caesar Cipher Tool</h1>
+            <p>Encrypt, decrypt, and crack messages using the ancient Caesar cipher technique</p>
+        </div>
+
+        <!-- Profile Section -->
+        <div class="profile-section">
+            <div class="profile-container">
+                <div class="profile-image-container">
+                    <!-- Replace 'assets/profile.jpg' with your actual image path -->
+                    <img src="assets/portfolio5.png" alt="Profile Picture" class="profile-image" 
+                         onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                    <div class="profile-image-placeholder" style="display: none;">
+                        👤
+                    </div>
+                </div>
+                <div class="profile-info">
+                    <h2 id="profileName">Laxman Yadav</h2>
+                    <div class="title" id="profileTitle">Computer Science Student | Cryptography Enthusiast</div>
+                    <div class="description" id="profileDescription">
+                        Passionate about software development, cybersecurity, and cryptographic algorithms. This Caesar Cipher tool demonstrates 
+                        the fundamentals of classical encryption techniques used throughout history. Built as part of 
+                        BCE-C 307 Python Programming coursework.
+                    </div>
+                    <div class="profile-links">
+                        <a href="mailto:laxmanyadav89357@gmail.com" class="profile-link" id="emailLink">
+                            <svg class="icon" viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+                            <span>laxmanyadav89357@gmail.com</span>
+                        </a>
+                        <a href="https://linkedin.com/in/laxman--yadav" class="profile-link" id="linkedinLink" target="_blank">
+                            <svg class="icon" viewBox="0 0 24 24"><path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.32 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.79M6.88 8.56a1.68 1.68 0 0 0 1.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 0 0-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z"/></svg>
+                            <span>LinkedIn Profile</span>
+                        </a>
+                        <a href="https://github.com/laxman-y" class="profile-link" id="githubLink" target="_blank">
+                            <svg class="icon" viewBox="0 0 24 24"><path d="M12 2A10 10 0 0 0 2 12c0 4.42 2.87 8.17 6.84 9.5c.5.08.66-.23.66-.5v-1.69c-2.77.6-3.36-1.34-3.36-1.34c-.46-1.16-1.11-1.47-1.11-1.47c-.91-.62.07-.6.07-.6c1 .07 1.53 1.03 1.53 1.03c.87 1.52 2.34 1.07 2.91.83c.09-.65.35-1.09.63-1.34c-2.22-.25-4.55-1.11-4.55-4.92c0-1.11.38-2 1.03-2.71c-.1-.25-.45-1.29.1-2.64c0 0 .84-.27 2.75 1.02c.79-.22 1.65-.33 2.5-.33c.85 0 1.71.11 2.5.33c1.91-1.29 2.75-1.02 2.75-1.02c.55 1.35.2 2.39.1 2.64c.65.71 1.03 1.6 1.03 2.71c0 3.82-2.34 4.66-4.57 4.91c.36.31.69.92.69 1.85V21c0 .27.16.59.67.5C19.14 20.16 22 16.42 22 12A10 10 0 0 0 12 2z"/></svg>
+                            <span>GitHub Profile</span>
+                        </a>
+                    </div>
+                   
+                </div>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="tab-container">
+                <button class="tab active" onclick="showTab(0)">
+                    <svg class="icon" viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/></svg>
+                    Encrypt
+                </button>
+                <button class="tab" onclick="showTab(1)">
+                    <svg class="icon" viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"/></svg>
+                    Decrypt
+                </button>
+                <button class="tab" onclick="showTab(2)">
+                    <svg class="icon" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27a6.51 6.51 0 001.48-5.34c-.47-2.78-2.79-5-5.59-5.34a6.505 6.505 0 00-7.27 7.27c.34 2.8 2.56 5.12 5.34 5.59a6.51 6.51 0 005.34-1.48l.27.28v.79l4.25 4.25c.41.41 1.08.41 1.49 0 .41-.41.41-1.08 0-1.49L15.5 14zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+                    Find Key
+                </button>
+                <button class="tab" onclick="showTab(3)">
+                    <svg class="icon" viewBox="0 0 24 24"><path d="M7 14c-1.66 0-3 1.34-3 3 0 1.31-1.16 2-2 2 .92 1.22 2.49 2 4 2 2.21 0 4-1.79 4-4 0-1.66-1.34-3-3-3zm13.71-9.37l-1.34-1.34a.996.996 0 00-1.41 0L9 12.25 11.75 15l8.96-8.96c.39-.39.39-1.02 0-1.41z"/></svg>
+                    Brute Force
+                </button>
+            </div>
+
+            <!-- Encrypt Tab -->
+            <div class="tab-content active">
+                <h2>🔒 Encrypt Message</h2>
+                <div class="form-group">
+                    <label for="plaintext">Plain Text:</label>
+                    <textarea id="plaintext" rows="4" placeholder="Enter your message to encrypt...">HELLO EVERYONE</textarea>
+                </div>
+                <div class="form-group">
+                    <label for="encryptShift">Shift Value (1-25):</label>
+                    <input type="number" id="encryptShift" min="1" max="25" value="1">
+                </div>
+                <div class="button-group">
+                    <button class="btn btn-primary" onclick="encryptMessage()">
+                        <svg class="icon" viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/></svg>
+                        Encrypt
+                    </button>
+                    <button class="btn btn-secondary" onclick="showShiftDemo()">
+                        <svg class="icon" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+                        Demo Multiple Shifts
+                    </button>
+                </div>
+                <div id="encryptResult" class="result-area" style="display: none;">
+                    <div class="result-title">
+                        <svg class="icon" viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+                        Encryption Result:
+                    </div>
+                    <textarea id="encryptOutput" rows="3" readonly></textarea>
+                </div>
+                <div id="shiftDemo" style="display: none;"></div>
+            </div>
+
+            <!-- Decrypt Tab -->
+            <div class="tab-content">
+                <h2>🔓 Decrypt Message</h2>
+                <div class="form-group">
+                    <label for="ciphertext">Cipher Text:</label>
+                    <textarea id="ciphertext" rows="4" placeholder="Enter encrypted message...">IFMMP FWFSZPOF</textarea>
+                </div>
+                <div class="form-group">
+                    <label for="decryptShift">Shift Value (1-25):</label>
+                    <input type="number" id="decryptShift" min="1" max="25" value="1">
+                </div>
+                <div class="button-group">
+                    <button class="btn btn-primary" onclick="decryptMessage()">
+                        <svg class="icon" viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"/></svg>
+                        Decrypt
+                    </button>
+                </div>
+                <div id="decryptResult" class="result-area" style="display: none;">
+                    <div class="result-title">
+                        <svg class="icon" viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+                        Decryption Result:
+                    </div>
+                    <textarea id="decryptOutput" rows="3" readonly></textarea>
+                </div>
+            </div>
+
+            <!-- Find Key Tab -->
+            <div class="tab-content">
+                <h2>🔍 Find Encryption Key</h2>
+                <div class="two-column">
+                    <div class="form-group">
+                        <label for="knownPlain">Known Plain Text:</label>
+                        <textarea id="knownPlain" rows="4" placeholder="Enter original message...">HELLO EVERYONE</textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="knownCipher">Known Cipher Text:</label>
+                        <textarea id="knownCipher" rows="4" placeholder="Enter encrypted message...">IFMMP FWFSZPOF</textarea>
+                    </div>
+                </div>
+                <div class="button-group">
+                    <button class="btn btn-primary" onclick="findKey()">
+                        <svg class="icon" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27a6.51 6.51 0 001.48-5.34c-.47-2.78-2.79-5-5.59-5.34a6.505 6.505 0 00-7.27 7.27c.34 2.8 2.56 5.12 5.34 5.59a6.51 6.51 0 005.34-1.48l.27.28v.79l4.25 4.25c.41.41 1.08.41 1.49 0 .41-.41.41-1.08 0-1.49L15.5 14zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+                        Find Key
+                    </button>
+                </div>
+                <div id="keyResult" class="result-area" style="display: none;">
+                    <div class="result-title">
+                        <svg class="icon" viewBox="0 0 24 24"><path d="M12 17l-5-5 1.4-1.4 3.6 3.6 7.6-7.6L20 8l-8 9z"/></svg>
+                        Key Found:
+                    </div>
+                    <div id="keyOutput"></div>
+                </div>
+            </div>
+
+            <!-- Brute Force Tab -->
+            <div class="tab-content">
+                <h2>💥 Brute Force Attack</h2>
+                <div class="form-group">
+                    <label for="bruteText">Encrypted Message:</label>
+                    <textarea id="bruteText" rows="4" placeholder="Enter cipher text to crack...">PMTTW NZWU BPM XIAB! BPMZM QA VWBPQVO BW AMM PMZM. EMTKWUM BW BPM EWZTL WN KZGXBWOZIXPG. BWBITTG NCV ABCNN!</textarea>
+                </div>
+                <div class="button-group">
+                    <button class="btn btn-warning" onclick="bruteForceAttack()">
+                        <svg class="icon" viewBox="0 0 24 24"><path d="M7 14c-1.66 0-3 1.34-3 3 0 1.31-1.16 2-2 2 .92 1.22 2.49 2 4 2 2.21 0 4-1.79 4-4 0-1.66-1.34-3-3-3zm13.71-9.37l-1.34-1.34a.996.996 0 00-1.41 0L9 12.25 11.75 15l8.96-8.96c.39-.39.39-1.02 0-1.41z"/></svg>
+                        Start Brute Force Attack
+                    </button>
+                </div>
+                <div id="bruteResult" class="result-area" style="display: none;">
+                    <div class="result-title">
+                        <svg class="icon" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                        All Possible Decryptions:
+                    </div>
+                    <div id="bruteOutput" class="brute-force-results"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Caesar Cipher Functions
+        function encryptText(plaintext, n) {
+            let result = "";
+            for (let i = 0; i < plaintext.length; i++) {
+                let char = plaintext[i];
+                if (char === ' ') {
+                    result += ' ';
+                } else if (char >= 'A' && char <= 'Z') {
+                    result += String.fromCharCode((char.charCodeAt(0) + n - 65) % 26 + 65);
+                } else if (char >= 'a' && char <= 'z') {
+                    result += String.fromCharCode((char.charCodeAt(0) + n - 97) % 26 + 97);
+                } else {
+                    result += char;
+                }
+            }
+            return result;
+        }
+
+        function decryptText(ciphertext, n) {
+            let result = "";
+            for (let i = 0; i < ciphertext.length; i++) {
+                let char = ciphertext[i];
+                if (char === ' ') {
+                    result += ' ';
+                } else if (char >= 'A' && char <= 'Z') {
+                    result += String.fromCharCode((char.charCodeAt(0) - n - 65 + 26) % 26 + 65);
+                } else if (char >= 'a' && char <= 'z') {
+                    result += String.fromCharCode((char.charCodeAt(0) - n - 97 + 26) % 26 + 97);
+                } else {
+                    result += char;
+                }
+            }
+            return result;
+        }
+
+        function keyFinder(cipherText, plainText) {
+            for (let i = 0; i < cipherText.length; i++) {
+                if (cipherText[i].match(/[A-Za-z]/) && plainText[i].match(/[A-Za-z]/)) {
+                    if (cipherText[i] >= 'A' && cipherText[i] <= 'Z') {
+                        return (cipherText[i].charCodeAt(0) - plainText[i].toUpperCase().charCodeAt(0) + 26) % 26;
+                    } else {
+                        return (cipherText[i].charCodeAt(0) - plainText[i].toLowerCase().charCodeAt(0) + 26) % 26;
+                    }
+                }
+            }
+            return 0;
+        }
+
+        // UI Functions
+        function showTab(tabIndex) {
+            const tabs = document.querySelectorAll('.tab');
+            const contents = document.querySelectorAll('.tab-content');
+            
+            tabs.forEach(tab => tab.classList.remove('active'));
+            contents.forEach(content => content.classList.remove('active'));
+            
+            tabs[tabIndex].classList.add('active');
+            contents[tabIndex].classList.add('active');
+        }
+
+        function encryptMessage() {
+            const plaintext = document.getElementById('plaintext').value;
+            const shift = parseInt(document.getElementById('encryptShift').value);
+            
+            if (!plaintext.trim()) {
+                alert('Please enter text to encrypt');
+                return;
+            }
+            
+            const encrypted = encryptText(plaintext, shift);
+            document.getElementById('encryptOutput').value = encrypted;
+            document.getElementById('encryptResult').style.display = 'block';
+        }
+
+        function decryptMessage() {
+            const ciphertext = document.getElementById('ciphertext').value;
+            const shift = parseInt(document.getElementById('decryptShift').value);
+            
+            if (!ciphertext.trim()) {
+                alert('Please enter text to decrypt');
+                return;
+            }
+            
+            const decrypted = decryptText(ciphertext, shift);
+            document.getElementById('decryptOutput').value = decrypted;
+            document.getElementById('decryptResult').style.display = 'block';
+        }
+
+        function findKey() {
+            const plainText = document.getElementById('knownPlain').value;
+            const cipherText = document.getElementById('knownCipher').value;
+            
+            if (!plainText.trim() || !cipherText.trim()) {
+                alert('Please enter both plain text and cipher text');
+                return;
+            }
+            
+            const key = keyFinder(cipherText, plainText);
+            document.getElementById('keyOutput').innerHTML = `
+                <div style="font-size: 1.2em; font-weight: bold; color: #28a745;">
+                    Key: ${key}
+                </div>
+                <div style="margin-top: 10px; color: #6c757d;">
+                    The text was encrypted using a shift of ${key} positions.
+                </div>
+            `;
+            document.getElementById('keyResult').style.display = 'block';
+        }
+
+        function bruteForceAttack() {
+            const message = document.getElementById('bruteText').value.toUpperCase();
+            
+            if (!message.trim()) {
+                alert('Please enter encrypted text to crack');
+                return;
+            }
+            
+            const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+            let output = '';
+            
+            for (let key = 0; key < 26; key++) {
+                let translated = '';
+                
+                for (let char of message) {
+                    if (letters.includes(char)) {
+                        let index = letters.indexOf(char);
+                        let newIndex = (index - key + 26) % 26;
+                        translated += letters[newIndex];
+                    } else {
+                        translated += char;
+                    }
+                }
+                
+                output += `
+                    <div class="key-result">
+                        <strong>Key ${key}:</strong> ${translated}
+                    </div>
+                `;
+            }
+            
+            document.getElementById('bruteOutput').innerHTML = output;
+            document.getElementById('bruteResult').style.display = 'block';
+        }
+
+        function showShiftDemo() {
+            const plaintext = document.getElementById('plaintext').value || 'HELLO EVERYONE';
+            const demoDiv = document.getElementById('shiftDemo');
+            
+            let demoHTML = '<div class="result-area"><div class="result-title">Encryption with Different Shifts:</div><div class="shift-demo">';
+            
+            for (let i = 1; i <= 4; i++) {
+                const encrypted = encryptText(plaintext, i);
+                demoHTML += `
+                    <div class="demo-card">
+                        <h4>Shift ${i}</h4>
+                        <div style="font-family: monospace; background: #f8f9fa; padding: 10px; border-radius: 5px; margin: 5px 0;">
+                            ${encrypted}
+                        </div>
+                    </div>
+                `;
+            }
+            
+            demoHTML += '</div></div>';
+            demoDiv.innerHTML = demoHTML;
+            demoDiv.style.display = 'block';
+        }
+    </script>
+</body>
+</html>
